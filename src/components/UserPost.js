@@ -7,13 +7,13 @@ import Actions from "./Actions";
 import { useState } from "react";
 
 
-const UserPost = ( ) => {
+const UserPost = ({likes,postTitle,postImg,replies,name} ) => {
 	const[liked,setLiked]= useState(false)
 	return (
 		<Link to={"/markzuckerberg/post/1"}>
 			<Flex gap={3} mb={4} py={5}>
 				<Flex flexDirection={"column"} alignItems={"center"}>
-					<Avatar size='md' name='Mark Zuckerberg' src='/zuck-avatar.png' />
+					<Avatar size='md' name='Mark Zuckerberg' src={postImg}/>
 					<Box w='1px' h={"full"} bg='gray.light' my={2}></Box>
 					<Box position={"relative"} w={"full"}>
 						<Avatar
@@ -49,7 +49,7 @@ const UserPost = ( ) => {
 					<Flex justifyContent={"space-between"} w={"full"}>
 						<Flex w={"full"} alignItems={"center"}>
 							<Text fontSize={"sm"} fontWeight={"bold"}>
-								markzuckerberg
+								{name}
 							</Text>
 							<Image src='/verified.png' w={4} h={4} ml={1} />
 						</Flex>
@@ -61,17 +61,26 @@ const UserPost = ( ) => {
 						</Flex>
 					</Flex>
 
-					<Text fontSize={"sm"}>This is my First post</Text>
-                    <Box borderRadius={6} overflow={"hidden"} border={"1px solid"} borderColor={"gray.light"}>
-							<Image src='/post1.png' w={"full"} />
+					<Text fontSize={"sm"}>{postTitle}</Text>
+					{
+						postImg &&(
+							<Box borderRadius={6} overflow={"hidden"} border={"1px solid"} borderColor={"gray.light"}>
+							<Image src={postImg} w={"full"} />
 						</Box>
+						)
+					}
+                 
 						<Flex  gap={3} my={1}>
 							<Actions liked={liked} setLiked={setLiked}/>
 						</Flex>
 
 				
 
-					
+					<Flex gap={2} alignItems={"center"}>
+						<Text color={"gray.light"} fontSize="sm" >{replies}replies </Text>
+						<Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
+						<Text color={"gray.light"} fontSize="sm">{likes} likes</Text>
+					</Flex>
 					
 				</Flex>
 			</Flex>
