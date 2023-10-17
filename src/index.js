@@ -5,6 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import {mode} from '@chakra-ui/theme-tools'
+import { ColorModeScript } from '@chakra-ui/react'
+import { BrowserRouter } from 'react-router-dom';
 const styles={
   global:(props)=>({
     body:{
@@ -27,10 +29,12 @@ const theme= extendTheme({config,styles,colors})
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <BrowserRouter>
     <ChakraProvider theme={theme}>
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <App />
     </ChakraProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
