@@ -2,6 +2,6 @@ const { atom } = require("recoil");
 
 const authScreenAtom= atom({
     key:'authScreenAtom',
-    default:'login'
+    default:'signup'
 })
 export default authScreenAtom
