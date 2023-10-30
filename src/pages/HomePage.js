@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const HomePage = () => {
   return (
- <Link to={"/update"}>
+ <Link to={"/:username"}>
     <Flex w={"full"} justifyContent={"center"}>
         <Button mx={"auto"} >Visit Profile Page</Button>
     </Flex>
