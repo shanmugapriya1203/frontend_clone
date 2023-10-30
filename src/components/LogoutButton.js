@@ -26,6 +26,7 @@ const LogoutButton = () => {
                return;
             }
             localStorage.removeItem("user-threads");
+            localStorage.removeItem("token");
             setUser(null)
         } catch (error) {
             console.log(error)

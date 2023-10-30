@@ -32,7 +32,7 @@ export default function UpdateProfilePage() {
 
 	const showToast = useShowToast();
 
-	const { handleImageChange, imgUrl } = usePreviewImg();
+	const { handleImageChange, imgUrl }= usePreviewImg();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -41,22 +41,25 @@ export default function UpdateProfilePage() {
 	
 		
 		const token = localStorage.getItem('token');
-	
+	  
 		try {
 		
 		  const headers = {
 			'Content-Type': 'application/json',
 		  };
+		  
 	
 		  if (token) {
-			headers['Authorization'] = `Bearer ${token}`;
+			headers.Authorization = token;
 		  }
 	
 		  const res = await fetch(`${API_BASE_URL}/api/users/update/${user._id}`, {
 			method: "PUT",
 			headers,
-			body: JSON.stringify({ ...inputs, profilePic: imgUrl }),
+			body: JSON.stringify( {...inputs, profilePic: imgUrl }),
+			
 		  });
+
 	
 		  const data = await res.json();
 	
@@ -73,6 +76,7 @@ export default function UpdateProfilePage() {
 		}
 	  };
 	return (
+
 		<form onSubmit={handleSubmit}>
 			<Flex align={"center"} justify={"center"} my={6}>
 				<Stack
