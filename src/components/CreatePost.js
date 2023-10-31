@@ -47,6 +47,7 @@ const CreatePost = () => {
 
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
 
+  const [loading,setLoading]=useState(false)
   const handleTextChange = (e) => {
     const inputText = e.target.value;
     if (inputText.length > Max_char) {
@@ -60,6 +61,7 @@ const CreatePost = () => {
   };
   const handleCreatePost = async () => {
     const token = localStorage.getItem("token");
+    setLoading(true)
     try {
       const headers = {
         "Content-Type": "application/json",
@@ -74,7 +76,7 @@ const CreatePost = () => {
         text: postText,
         img: imgUrl,
       };
-  
+   
       const res = await fetch(`${API_BASE_URL}/api/posts/create`, {
         method: "POST",
         headers,
@@ -90,8 +92,13 @@ const CreatePost = () => {
   
       showToast("Success", "Post created successfully", "success");
       onClose();
+      setPostText("")
+      setImgUrl("")
     } catch (error) {
       showToast("Error", error, "error");
+    }
+    finally{
+        setLoading(false)
     }
   };
   
@@ -155,7 +162,9 @@ const CreatePost = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreatePost}>
+            <Button colorScheme="blue" mr={3} onClick={handleCreatePost}
+            isLoading={loading}
+            >
               Post
             </Button>
           </ModalFooter>
