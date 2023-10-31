@@ -30,12 +30,23 @@ import usePreviewImg from "./../hooks/usePreviewImg";
 import { BsFillImageFill } from "react-icons/bs";
 
 const CreatePost = () => {
+    const user = useRecoilState(userAtom);
+    console.log(user)
+     
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [postText, setPostText] = useState("");
+
+  const showToast = useShowToast();
+
   const imageRef = useRef(null);
+
   let Max_char = 500;
+
   const [remainingChar, setRemainingChar] = useState(Max_char);
+
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
+
   const handleTextChange = (e) => {
     const inputText = e.target.value;
     if (inputText.length > Max_char) {
@@ -47,7 +58,43 @@ const CreatePost = () => {
       setRemainingChar(Max_char - inputText.length);
     }
   };
-  const handleCreatePost = async () => {};
+  const handleCreatePost = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+  
+      if (token) {
+        headers.Authorization = token;
+      }
+  
+      const postData = {
+        postedBy: user[0]._id, 
+        text: postText,
+        img: imgUrl,
+      };
+  
+      const res = await fetch(`${API_BASE_URL}/api/posts/create`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(postData),
+      });
+  
+      const data = await res.json();
+  
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+  
+      showToast("Success", "Post created successfully", "success");
+      onClose();
+    } catch (error) {
+      showToast("Error", error, "error");
+    }
+  };
+  
   return (
     <>
       <Button
