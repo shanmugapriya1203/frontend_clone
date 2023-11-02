@@ -31,7 +31,7 @@ import { BsFillImageFill } from "react-icons/bs";
 
 const CreatePost = () => {
     const user = useRecoilState(userAtom);
-    console.log(user)
+    
      
   const { isOpen, onOpen, onClose } = useDisclosure();
 

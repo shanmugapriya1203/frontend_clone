@@ -4,17 +4,46 @@ import { Box, Flex, Text } from "@chakra-ui/layout";
 import { BsThreeDots } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import Actions from "./Actions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useShowToast from "../hooks/useShowToast";
+import { API_BASE_URL } from "../config";
 
-
-const Post = ({post,userId} ) => {
+const Post = ({post,postedBy} ) => {
 	const[liked,setLiked]= useState(false)
-    console.log(post)
+	const[user,setUser]=useState(null)
+	const showToast=useShowToast()
+    useEffect(()=>{
+    const getUser= async()=>{
+		const token= localStorage.getItem("token")
+		try {
+			const headers = {
+				"Content-Type": "application/json",
+			  };
+		
+			  if (token) {
+				headers.Authorization = token;
+			  }
+			  const res= await fetch(`${API_BASE_URL}/api/users/profile/`+ postedBy,{
+				method: "GET",
+				headers,
+			  })
+			  const data= await res.json()
+			setUser(data)
+			
+			 
+		} catch (error) {
+			showToast("Error",error.message,"error")
+			setUser(null)
+		}
+	}
+	getUser()
+	},[postedBy,showToast])
+if(!user) return null
 	return (
 		<Link to={"/markzuckerberg/post/1"}>
 			<Flex gap={3} mb={4} py={5}>
 				<Flex flexDirection={"column"} alignItems={"center"}>
-					<Avatar size='md' name='Mark Zuckerberg' src={}/>
+					<Avatar size='md' name='Mark Zuckerberg' src={user.profilePic}/>
 					<Box w='1px' h={"full"} bg='gray.light' my={2}></Box>
 					<Box position={"relative"} w={"full"}>
 						<Avatar
@@ -49,8 +78,8 @@ const Post = ({post,userId} ) => {
 				<Flex flex={1} flexDirection={"column"} gap={2}>
 					<Flex justifyContent={"space-between"} w={"full"}>
 						<Flex w={"full"} alignItems={"center"}>
-							<Text fontSize={"sm"} fontWeight={"bold"}>
-								{name}
+							<Text fontSize={"sm"} fontWeight={"bold"} color={"white"}>
+						{user?.name}
 							</Text>
 							<Image src='/verified.png' w={4} h={4} ml={1} />
 						</Flex>
