@@ -7,6 +7,8 @@ import Actions from "./Actions";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { API_BASE_URL } from "../config";
+import { formatDistanceToNow } from "date-fns";
+
 
 const Post = ({post,postedBy} ) => {
 	const[liked,setLiked]= useState(false)
@@ -100,20 +102,22 @@ if(!user) return null
 					<Flex justifyContent={"space-between"} w={"full"}>
 						<Flex w={"full"} alignItems={"center"}>
 							<Text fontSize={"sm"} fontWeight={"bold"} color={"white"}
-							onClick={(e)=>{
-								e.preventDefault()
-								navigate(`${user.username}`)
-							}}
+								onClick={(e)=>{
+									e.preventDefault()
+									navigate(`${user.username}`)
+								}}
 								
 							>
 						{user?.name} 		</Text>
 							<Image src='/verified.png' w={4} h={4} ml={1} />
 						</Flex>
 						<Flex gap={4} alignItems={"center"}>
-							<Text fontStyle={"sm"} color={"gray.light"}>
-								1d
+							<Text fontSize={"xs"} width={36} textAlign={"right"} color={"gray.light"}>
+							{
+								formatDistanceToNow(new Date(post.createdAt)) 
+							} ago
 							</Text>
-							<BsThreeDots />
+							
 						</Flex>
 					</Flex>
 
