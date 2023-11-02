@@ -2,7 +2,7 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Image } from "@chakra-ui/image";
 import { Box, Flex, Text } from "@chakra-ui/layout";
 import { BsThreeDots } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
@@ -12,6 +12,7 @@ const Post = ({post,postedBy} ) => {
 	const[liked,setLiked]= useState(false)
 	const[user,setUser]=useState(null)
 	const showToast=useShowToast()
+	const navigate= useNavigate()
     useEffect(()=>{
     const getUser= async()=>{
 		const token= localStorage.getItem("token")
@@ -40,47 +41,72 @@ const Post = ({post,postedBy} ) => {
 	},[postedBy,showToast])
 if(!user) return null
 	return (
-		<Link to={"/markzuckerberg/post/1"}>
+		<Link to= {`${user.username}/post/${post._id}`}>
 			<Flex gap={3} mb={4} py={5}>
 				<Flex flexDirection={"column"} alignItems={"center"}>
-					<Avatar size='md' name='Mark Zuckerberg' src={user.profilePic}/>
+					<Avatar size='md' name='user pic' src={user.profilePic}
+					onClick={(e)=>{
+						e.preventDefault()
+						navigate(`${user.username}`)
+					}}/>
 					<Box w='1px' h={"full"} bg='gray.light' my={2}></Box>
 					<Box position={"relative"} w={"full"}>
-						<Avatar
+						{post.replies.length === 0 && <Text textAlign={"center"}>😒</Text>}
+						{
+							post.replies[0] && (
+								<Avatar
 							size='xs'
 							name='John doe'
-							src='https://bit.ly/dan-abramov'
+							src={post.replies[0].userProfilePic}
+							position={"absolute"}
+							top={"0px"}
+							left='15px'
+							padding={"2px"}
+						/>	
+							)
+						}
+						{
+							post.replies[1] && (
+                            <Avatar
+							size='xs'
+							name='John doe'
+							src={post.replies[1].userProfilePic}
 							position={"absolute"}
 							top={"0px"}
 							left='15px'
 							padding={"2px"}
 						/>
-						<Avatar
-							size='xs'
-							name='John doe'
-							src='https://bit.ly/sage-adebayo'
-							position={"absolute"}
-							bottom={"0px"}
-							right='-5px'
-							padding={"2px"}
-						/>
-						<Avatar
-							size='xs'
-							name='John doe'
-							src='https://bit.ly/prosper-baba'
-							position={"absolute"}
-							bottom={"0px"}
-							left='4px'
-							padding={"2px"}
-						/>
+							)
+						}
+						{
+							post.replies[2] && (
+								<Avatar
+								size='xs'
+								name='John doe'
+								src={post.replies[1].userProfilePic}
+								position={"absolute"}
+								top={"0px"}
+								left='15px'
+								padding={"2px"}
+							/>
+							)
+						}
+						
+					
+					
 					</Box>
 				</Flex>
 				<Flex flex={1} flexDirection={"column"} gap={2}>
 					<Flex justifyContent={"space-between"} w={"full"}>
 						<Flex w={"full"} alignItems={"center"}>
-							<Text fontSize={"sm"} fontWeight={"bold"} color={"white"}>
-						{user?.name}
-							</Text>
+							<Text fontSize={"sm"} fontWeight={"bold"} color={"white"}
+							onClick={(e)=>{
+								e.preventDefault()
+								navigate(`${user.username}`)
+							}}
+								
+							>
+						{user?.name} 		</Text>
 							<Image src='/verified.png' w={4} h={4} ml={1} />
 						</Flex>
 						<Flex gap={4} alignItems={"center"}>
