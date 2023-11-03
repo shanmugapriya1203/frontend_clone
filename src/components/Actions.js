@@ -1,7 +1,50 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Flex ,Text,Box} from '@chakra-ui/react'
+import { useRecoilValue } from 'recoil'
+import userAtom from './../atoms/userAtom';
+import useShowToast from '../hooks/useShowToast';
+import { API_BASE_URL } from '../config';
 
-const Actions = ({liked,setLiked}) => {
+
+const Actions = ({post:post_}) => {
+
+	const user=useRecoilValue(userAtom)
+	const showToast=useShowToast()
+		const[liked,setLiked]=useState(post_.likes.includes(user?._id))
+	const[post,setPost]=useState(post_)
+	const[isLiking,setIsLiking]=useState(false)
+
+	const handleLikeAndUnlike=async()=>{
+		if(!user) return showToast('Error','You must be logged in to like a post','error')
+		if(isLiking) return;
+		setIsLiking(true)
+		const token = localStorage.getItem("token");
+		try {
+			 
+		
+			  const headers = {
+				"Content-Type": "application/json",
+			  };
+	  
+			  if (token) {
+				headers.Authorization = token;
+			  }
+			const res= await fetch(`${API_BASE_URL}/api/posts/like/`+post._id,{
+				method:'PUT',
+				headers,
+			})
+			const data = await res.json();
+			if(!liked){
+setPost({...post,likes:[...post.likes.filter(id=>id !== user._id)]})
+			}
+			console.log(data)
+			setLiked(!liked)
+		} catch (error) {
+			showToast('Error',error.message,'error')
+		}finally{
+			setIsLiking(false)
+		}
+	}
   return (
     <Flex flexDirection='column'>
     <Flex gap={3} my={2} onClick={(e) => e.preventDefault()}>
@@ -13,7 +56,7 @@ const Actions = ({liked,setLiked}) => {
             role='img'
             viewBox='0 0 24 22'
             width='20'
-            onClick={()=>setLiked(!liked)}
+            onClick={handleLikeAndUnlike}
             
         >
             <path
@@ -48,7 +91,15 @@ const Actions = ({liked,setLiked}) => {
 				<ShareSVG />
     </Flex>
 
- 
+    <Flex gap={2} alignItems={"center"}>
+            <Text color={"gray.light"} fontSize="sm">
+              {post_.replies.length}replies{" "}
+            </Text>
+            <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
+            <Text color={"gray.light"} fontSize="sm">
+              {post.likes.length} likes
+            </Text>
+          </Flex>
 
    
 </Flex>
@@ -106,5 +157,6 @@ const ShareSVG = () => {
 				strokeWidth='2'
 			></polygon>
 		</svg>
+
 	);
 };
