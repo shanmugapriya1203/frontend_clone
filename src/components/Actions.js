@@ -1,13 +1,21 @@
 import React, { useState } from 'react'
-import { Flex ,Text,Box} from '@chakra-ui/react'
+import { Flex ,Text,Box, useDisclosure, FormControl, FormLabel, Input, Button, ModalHeader} from '@chakra-ui/react'
 import { useRecoilValue } from 'recoil'
 import userAtom from './../atoms/userAtom';
 import useShowToast from '../hooks/useShowToast';
 import { API_BASE_URL } from '../config';
+import {
+	Modal,
+	ModalOverlay,
+	ModalContent,
 
+	ModalFooter,
+	ModalBody,
+	ModalCloseButton,
+  } from '@chakra-ui/react'
 
 const Actions = ({post:post_}) => {
-
+	const { isOpen, onOpen, onClose } = useDisclosure()
 	const user=useRecoilValue(userAtom)
 	const showToast=useShowToast()
 		const[liked,setLiked]=useState(post_.likes.includes(user?._id))
@@ -74,6 +82,7 @@ setPost({...post,likes:[...post.likes.filter(id=>id !== user._id)]})
             role='img'
             viewBox='0 0 24 24'
             width='20'
+			onClick={onOpen}
          
         >
             <title>Comment</title>
@@ -101,6 +110,31 @@ setPost({...post,likes:[...post.likes.filter(id=>id !== user._id)]})
             </Text>
           </Flex>
 
+ <Modal
+      
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+        <ModalHeader/>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+             
+              <Input placeholder='Enter a Reply' />
+            </FormControl>
+
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' size={"sm"}mr={3}>
+              Reply
+            </Button>
+          
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
    
 </Flex>
   )
