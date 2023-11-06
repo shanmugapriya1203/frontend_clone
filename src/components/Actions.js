@@ -18,9 +18,12 @@ const Actions = ({post:post_}) => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const user=useRecoilValue(userAtom)
 	const showToast=useShowToast()
-		const[liked,setLiked]=useState(post_.likes.includes(user?._id))
+	const[liked,setLiked]=useState(post_.likes.includes(user?._id))
 	const[post,setPost]=useState(post_)
 	const[isLiking,setIsLiking]=useState(false)
+	const[isReplying,setIsReplying]=useState(false)
+	const[reply,setReply]=useState('')
+
 
 	const handleLikeAndUnlike=async()=>{
 		if(!user) return showToast('Error','You must be logged in to like a post','error')
@@ -52,6 +55,36 @@ setPost({...post,likes:[...post.likes.filter(id=>id !== user._id)]})
 		}finally{
 			setIsLiking(false)
 		}
+	}
+	const handleReply=async()=>{
+		if(!user) return showToast('Error','You must be logged in to like a post','error')
+		if(isReplying)return
+		setIsReplying(true)
+		const token = localStorage.getItem("token");
+	try {
+		const headers = {
+			"Content-Type": "application/json",
+		  };
+  
+		  if (token) {
+			headers.Authorization = token;
+		  }
+		  const res= await fetch(`${API_BASE_URL}/api/posts/reply/`+post._id,{
+			method:'PUT',
+			headers,
+			body:JSON.stringify({text:reply})
+		})
+		const data = await res.json();
+		setPost({...post,replies:[...post.replies,data.reply]})
+		showToast("Success","Reply Post successfully","success")
+		onClose()
+	} catch (error) {
+		showToast('Error',error.message,'error')
+	}
+	finally{
+		setIsReplying(false)
+	}
+
 	}
   return (
     <Flex flexDirection='column'>
@@ -102,7 +135,7 @@ setPost({...post,likes:[...post.likes.filter(id=>id !== user._id)]})
 
     <Flex gap={2} alignItems={"center"}>
             <Text color={"gray.light"} fontSize="sm">
-              {post_.replies.length}replies{" "}
+              {post_.replies.length} replies{" "}
             </Text>
             <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
             <Text color={"gray.light"} fontSize="sm">
@@ -122,13 +155,17 @@ setPost({...post,likes:[...post.likes.filter(id=>id !== user._id)]})
           <ModalBody pb={6}>
             <FormControl>
              
-              <Input placeholder='Enter a Reply' />
+              <Input placeholder='Enter a Reply'
+			  value={reply}
+			  onChange={(e)=>setReply(e.target.value)} />
             </FormControl>
 
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' size={"sm"}mr={3}>
+            <Button colorScheme='blue' size={"sm"}mr={3}
+			isLoading={isReplying}
+			onClick={handleReply}>
               Reply
             </Button>
           
