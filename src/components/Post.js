@@ -8,9 +8,14 @@ import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { API_BASE_URL } from "../config";
 import { formatDistanceToNow } from "date-fns";
+import { DeleteIcon } from "@chakra-ui/icons";
+import { useRecoilState } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 const Post = ({ post, postedBy }) => {
   const [user, setUser] = useState(null);
+  const currentUser= useRecoilState(userAtom)
+
   const showToast = useShowToast();
   const navigate = useNavigate();
   useEffect(() => {
@@ -33,13 +38,42 @@ const Post = ({ post, postedBy }) => {
         );
         const data = await res.json();
         setUser(data);
+     
+      
       } catch (error) {
+        console.log(error)
         showToast("Error", error.message, "error");
         setUser(null);
       }
     };
     getUser();
   }, [postedBy, showToast]);
+
+  const handleDeletePost=async(e)=>{
+
+    const token = localStorage.getItem("token");
+    try {
+      e.preventDefault(
+      )
+      if(!window.confirm("Are you sure you want to delete this post"))return
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers.Authorization = token;
+      }
+      const res= await fetch(`${API_BASE_URL}/api/posts/${post._id}`,{
+        method:"DELETE",
+        headers,
+      })
+      const data= await res.json()
+      showToast("Success","Post deleted",'success')
+
+    } catch (error) {
+      console.log(error)
+      showToast("Error", error.message, "error");
+    }
+  }
   if (!user) return null;
   return (
     <Link to={`${user.username}/post/${post._id}`}>
@@ -117,6 +151,13 @@ const Post = ({ post, postedBy }) => {
               >
                 {formatDistanceToNow(new Date(post.createdAt))} ago
               </Text>
+         {
+          currentUser[0]._id === user._id && (
+            <DeleteIcon size={20}  onClick={handleDeletePost}/>
+          )
+         }
+            
+        
             </Flex>
           </Flex>
 
